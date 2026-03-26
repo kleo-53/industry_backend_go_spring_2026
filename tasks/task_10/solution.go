@@ -3,13 +3,12 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"sort"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 var TaskNotFound = errors.New("no task with such id in storage")
@@ -33,9 +32,10 @@ type TaskRepo interface {
 }
 
 type Storage struct {
-	mu    sync.RWMutex
-	tasks map[string]Task
-	clock Clock
+	mu      sync.RWMutex
+	tasks   map[string]Task
+	clock   Clock
+	counter uint64
 }
 
 func NewInMemoryTaskRepo(clock Clock) *Storage {
@@ -49,7 +49,8 @@ func (s *Storage) Create(title string) (Task, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	id := uuid.NewString()
+	id := fmt.Sprint(s.counter)
+	s.counter++
 	newTask := Task{
 		ID:        id,
 		Title:     title,
