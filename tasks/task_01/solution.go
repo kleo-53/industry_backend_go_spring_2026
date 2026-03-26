@@ -1,5 +1,10 @@
 package main
 
 func greet(name string) string {
-	// TODO
+	switch name {
+	case "":
+		return "Hello, World!"
+	default:
+		return "Hello, " + name + "!"
+	}
 }
